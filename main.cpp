@@ -17,7 +17,7 @@ string ScanIdentifier(ifstream& file, char firstChar);
 TokenRecord GetToken(ifstream& file){
     TokenRecord currentToken;
     char c;
-    while (file.get(c)) {
+    while (file.get(c)) {   // ignore spaces and new lines
         if (c == ' ' || c == '\n' || c == '\t') {
             continue;
         }
@@ -30,7 +30,7 @@ TokenRecord GetToken(ifstream& file){
             currentToken.type = NUMBER;
         }
         else {
-            if (c == ':') {
+            if (c == ':') {     // handle assign operator
                 char nextC;
                 if (file.get(nextC) && nextC == '=') {
                     currentToken.value = ":=";
@@ -53,7 +53,27 @@ TokenRecord GetToken(ifstream& file){
     }
     return currentToken;
 }
-
+string tokenNames[] = { // mapping enumerable integer values to their respective token types
+    "SEMICOLON", "IF", "THEN", "END", "REPEAT", "UNTIL", "IDENTIFIER",
+    "ASSIGN", "READ", "WRITE", "LESSTHAN", "EQUAL", "PLUS", "MINUS",
+    "MULT", "DIV", "OPENBRACKET", "CLOSEDBRACKET", "NUMBER", "ENDFILE", "ERROR"
+};
 int main() {
+    ifstream inputFile("input.txt");
+    ofstream fileout("tokens.txt");
+    if (!inputFile.is_open()) {
+        cout << "Error opening file!" << endl;
+        return 1;
+    }
+
+    while (!inputFile.eof()) {
+        TokenRecord token = GetToken(inputFile);
+        if (token.type == ENDFILE) {
+            break;
+        }
+        fileout << token.value << " , " << tokenNames[token.type] << endl;
+    }
+    inputFile.close();
+    fileout.close();
     return 0;
 }
