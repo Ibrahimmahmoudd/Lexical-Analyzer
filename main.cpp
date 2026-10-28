@@ -21,6 +21,13 @@ TokenRecord GetToken(ifstream& file){
         if (c == ' ' || c == '\n' || c == '\t') {
             continue;
         }
+        if (c == '{') {     // ignore comments
+            while (file.get(c)) {
+                if (c == '}')
+                    break;
+            }
+            continue;
+        }
         if (isalpha(c)) {
             currentToken.value = ScanIdentifier(file, c);
             currentToken.type = CheckKeyword(currentToken.value);
