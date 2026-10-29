@@ -34,8 +34,34 @@ TokenType CheckSymbol(char symbol){
         default: return ERROR;
     }
 }
-string ScanNumber(ifstream& file, char firstChar);
-string ScanIdentifier(ifstream& file, char firstChar);
+string ScanNumber(ifstream& file, char firstChar){
+    string num = string(1, firstChar);
+    char nextChar;
+
+    while (file.get(nextChar)) {
+        if (isdigit(nextChar))
+            num += nextChar;
+        else {
+            file.unget(); // return non digit character back into the stream
+            break;
+        }
+    }
+    return num;
+}
+string ScanIdentifier(ifstream& file, char firstChar){
+    string id = string(1, firstChar);
+    char nextChar;
+
+    while (file.get(nextChar)) {
+        if (isalpha(nextChar))
+            id += nextChar;
+        else {
+            file.unget(); // return non letter character back into the stream
+            break;
+        }
+    }
+    return id;
+}
 TokenRecord GetToken(ifstream& file){
     TokenRecord currentToken;
     char c;
