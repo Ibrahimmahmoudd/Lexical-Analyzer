@@ -64,9 +64,10 @@ string ScanIdentifier(ifstream& file, char firstChar){
 }
 TokenRecord GetToken(ifstream& file){
     TokenRecord currentToken;
+    currentToken.type = ENDFILE;
     char c;
     while (file.get(c)) {   // ignore spaces and new lines
-        if (c == ' ' || c == '\n' || c == '\t') {
+        if (c == ' ' || c == '\n' || c == '\t' || c == '\r') {
             continue;
         }
         if (c == '{') {     // ignore comments
@@ -79,19 +80,26 @@ TokenRecord GetToken(ifstream& file){
         if (isalpha(c)) {
             currentToken.value = ScanIdentifier(file, c);
             currentToken.type = CheckKeyword(currentToken.value);
+            return currentToken;
         }
         else if (isdigit(c)) {
             currentToken.value = ScanNumber(file, c);
             currentToken.type = NUMBER;
+            return currentToken;
         }
         else {
             if (c == ':') {     // handle assign operator
                 char nextC;
-                if (file.get(nextC) && nextC == '=') {
-                    currentToken.value = ":=";
-                    currentToken.type = ASSIGN;
+                if (file.get(nextC)) {
+                    if (nextC == '=') {
+                        currentToken.value = ":=";
+                        currentToken.type = ASSIGN;
+                    } else {
+                        file.unget(); // typing error
+                        currentToken.value = ":";
+                        currentToken.type = ERROR;
+                    }
                 } else {
-                    file.unget(); // typing error
                     currentToken.value = ":";
                     currentToken.type = ERROR;
                 }
@@ -99,12 +107,8 @@ TokenRecord GetToken(ifstream& file){
                 currentToken.value = string(1, c);
                 currentToken.type = CheckSymbol(c);
             }
+            return currentToken;
         }
-
-        break;
-    }
-    if (file.eof()) {
-        currentToken.type = ENDFILE;
     }
     return currentToken;
 }
@@ -121,7 +125,7 @@ int main() {
         return 1;
     }
 
-    while (!inputFile.eof()) {
+    while (true) {
         TokenRecord token = GetToken(inputFile);
         if (token.type == ENDFILE) {
             break;
