@@ -1,0 +1,6 @@
+{ This is a sample TINY program }
+read x;
+if x < 12 then
+    xyz := x + 289;
+    write xyz;
+end
