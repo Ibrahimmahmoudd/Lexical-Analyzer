@@ -10,8 +10,30 @@ struct TokenRecord {
     string value;
     TokenType type;
 };
-TokenType CheckKeyword(string word);
-TokenType CheckSymbol(char symbol);
+TokenType CheckKeyword(string word){
+    if (word == "if") return IF;
+    if (word == "then") return THEN;
+    if (word == "end") return END;
+    if (word == "repeat") return REPEAT;
+    if (word == "until") return UNTIL;
+    if (word == "read") return READ;
+    if (word == "write") return WRITE;
+    return IDENTIFIER;
+}
+TokenType CheckSymbol(char symbol){
+    switch (symbol) {
+        case ';': return SEMICOLON;
+        case '<': return LESSTHAN;
+        case '=': return EQUAL;
+        case '+': return PLUS;
+        case '-': return MINUS;
+        case '*': return MULT;
+        case '/': return DIV;
+        case '(': return OPENBRACKET;
+        case ')': return CLOSEDBRACKET;
+        default: return ERROR;
+    }
+}
 string ScanNumber(ifstream& file, char firstChar);
 string ScanIdentifier(ifstream& file, char firstChar);
 TokenRecord GetToken(ifstream& file){
