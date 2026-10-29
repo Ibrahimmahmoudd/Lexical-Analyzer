@@ -132,11 +132,10 @@ TokenRecord GetToken(ifstream& file){
             }
         }
 
-        break;
+        return currentToken;
     }
-    if (file.eof()) {
-        currentToken.type = ENDFILE;
-    }
+    currentToken.value = "";
+    currentToken.type = ENDFILE;
     return currentToken;
 }
 string tokenNames[] = { // mapping enumerable integer values to their respective token types
