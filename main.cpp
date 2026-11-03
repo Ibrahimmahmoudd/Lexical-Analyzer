@@ -11,13 +11,17 @@ struct TokenRecord {
     TokenType type;
 };
 TokenType CheckKeyword(string word){
-    if (word == "if") return IF;
-    if (word == "then") return THEN;
-    if (word == "end") return END;
-    if (word == "repeat") return REPEAT;
-    if (word == "until") return UNTIL;
-    if (word == "read") return READ;
-    if (word == "write") return WRITE;
+    string lower_word = "";
+    for (char c : word) {
+        lower_word += tolower(c); //convert to lower case to handle case insensitivity
+    }
+    if (lower_word == "if") return IF;
+    if (lower_word == "then") return THEN;
+    if (lower_word == "end") return END;
+    if (lower_word == "repeat") return REPEAT;
+    if (lower_word == "until") return UNTIL;
+    if (lower_word == "read") return READ;
+    if (lower_word == "write") return WRITE;
     return IDENTIFIER;
 }
 TokenType CheckSymbol(char symbol){
