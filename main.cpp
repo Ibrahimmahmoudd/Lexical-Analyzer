@@ -38,13 +38,18 @@ TokenType CheckSymbol(char symbol){
         default: return ERROR;
     }
 }
-string ScanNumber(ifstream& file, char firstChar){
+string ScanNumber(ifstream& file, char firstChar, TokenType& outType){
     string num = string(1, firstChar);
     char nextChar;
-
+    outType = NUMBER; // Default to number
     while (file.get(nextChar)) {
         if (isdigit(nextChar))
             num += nextChar;
+        else if (isalpha(nextChar) || nextChar == '.') {
+            // Illegal character in number (e, E, or decimal point)
+            num += nextChar;
+            outType = ERROR;
+        }
         else {
             file.unget(); // return non digit character back into the stream
             break;
@@ -52,13 +57,18 @@ string ScanNumber(ifstream& file, char firstChar){
     }
     return num;
 }
-string ScanIdentifier(ifstream& file, char firstChar){
+string ScanIdentifier(ifstream& file, char firstChar, TokenType& outType){
     string id = string(1, firstChar);
     char nextChar;
-
+    outType = IDENTIFIER; // Default to identifier
     while (file.get(nextChar)) {
         if (isalpha(nextChar))
             id += nextChar;
+        else if (isdigit(nextChar)) {
+        // Illegal character in identifier
+        id += nextChar;
+        outType = ERROR;
+        }
         else {
             file.unget(); // return non letter character back into the stream
             break;
@@ -82,13 +92,20 @@ TokenRecord GetToken(ifstream& file){
             continue;
         }
         if (isalpha(c)) {
-            currentToken.value = ScanIdentifier(file, c);
-            currentToken.type = CheckKeyword(currentToken.value);
+            TokenType type;
+            currentToken.value = ScanIdentifier(file, c,type);
+            if (type == ERROR) {
+                currentToken.type = ERROR;
+            } else {
+                currentToken.type = CheckKeyword(currentToken.value);
+            }
+            return currentToken;
             return currentToken;
         }
         else if (isdigit(c)) {
-            currentToken.value = ScanNumber(file, c);
-            currentToken.type = NUMBER;
+            TokenType type;
+            currentToken.value = ScanNumber(file, c,type);
+            currentToken.type = type;
             return currentToken;
         }
         else {
